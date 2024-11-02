@@ -62,6 +62,7 @@ function updateParameters() {
                 <label for="desiredValues">Valores Deseados (Lista):</label>
                 <input type="text" id="desiredValues" placeholder="Ej. 70, 30">
             `;
+            window.open("./bayes.html", "_blank").focus();
             break;
 
         case 'neuralNetwork':

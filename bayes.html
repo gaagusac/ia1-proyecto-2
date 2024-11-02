@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./tytus.js" type="text/javascript"></script>
+    <title>Naive Bayes G16</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h2, h3 {
+            color: #333;
+        }
+        #container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        td {
+            background-color: #e2f3e6;
+        }
+        select, button {
+            padding: 8px 12px;
+            margin-top: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #csv-upload {
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <button id="csv-upload">Upload CSV</button>
+        <input type="file" id="file-input" style="display:none" accept=".csv">
+        
+        <h2>Bayes Ingenuo</h2>
+        <h3>Entrenamiento</h3>
+        <table id="tabla" border="1"></table>
+
+        <h3>Predecir</h3>
+        <select name="effect" id="effect_dropdown"></select>
+
+        <h3>Cuando</h3>
+        <div id="events"></div><br>
+        <button type="button" onclick="Predict()">PREDECIR!</button>
+
+        <h3>Resultado: </h3>
+        <div id="predict_result"></div>
+    </div>
+
+
+    <script src="./tytus.js" type="text/javascript"></script>
+    <script>
+        document.getElementById("csv-upload").addEventListener("click", function() {
+            document.getElementById("file-input").click();
+        });
+
+        document.getElementById("file-input").addEventListener("change", handleFileSelect);
+
+        // Variables to store data
+        var names = ["clima", "temperatura", "humedad", "viento", "juega"];
+        var cli = [], tem = [], hum = [], vie = [], jue = [];
+
+        // Parse CSV
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split("\n").map(line => line.trim()).filter(line => line);
+                
+                cli = [], tem = [], hum = [], vie = [], jue = [];
+
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = lines[i].split(",");
+                    if (cols.length === 5) {
+                        cli.push(cols[0].trim());
+                        tem.push(cols[1].trim());
+                        hum.push(cols[2].trim());
+                        vie.push(cols[3].trim());
+                        jue.push(cols[4].trim());
+                    }
+                }
+                displayTable();
+                setDropdowns();
+                setEventInputs();
+            };
+            reader.readAsText(file);
+        }
+
+        // Function to display the data in the table
+        function displayTable() {
+            var table = "<tr>";
+            for (const i in names) {
+                table += "<th>" + names[i] + "</th>";
+            }
+            table += "</tr>";
+
+            for (let i = 0; i < cli.length; i++) {
+                table += `<tr><td>${cli[i]}</td><td>${tem[i]}</td><td>${hum[i]}</td><td>${vie[i]}</td><td>${jue[i]}</td></tr>`;
+            }
+            document.getElementById("tabla").innerHTML = table;
+        }
+
+        // Initialize NaiveBayes and insert causes
+        var naive = new NaiveBayes();
+        function setDropdowns() {
+            naive.insertCause(names[0], cli);
+            naive.insertCause(names[1], tem);
+            naive.insertCause(names[2], hum);
+            naive.insertCause(names[3], vie);
+            naive.insertCause(names[4], jue);
+
+            // Populate the effect dropdown
+            let drop = "";
+            for (const i in names) {
+                drop += "<option value=" + names[i] + ">" + names[i] + "</option>";
+            }
+            document.getElementById("effect_dropdown").innerHTML = drop;
+        }
+
+        // Function to set event input selectors
+        function setEventInputs() {
+            let event_causes = "<table>";
+            let causes = naive.causes;
+
+            for (let index = 0; index < causes.length; index++) {
+                event_causes += `<tr><td><label id="label_${index + 1}">${causes[index][0]}</label></td>`;
+                event_causes += `<td><select name="cause" id="cause${index + 1}_dropdown"><option value="">- - -</option>`;
+                let events = Array.from(new Set(causes[index][1]));
+                events.forEach(event => {
+                    event_causes += `<option value="${event}">${event}</option>`;
+                });
+                event_causes += "</select></td></tr>";
+            }
+            document.getElementById("events").innerHTML = event_causes;
+        }
+
+        // Predict function
+        function Predict() {
+            var effect = document.getElementById("effect_dropdown").value;
+            let my_causes = [];
+
+            for (let index = 0; index < names.length - 1; index++) {
+                let id = index + 1;
+                let label_text = document.getElementById("label_" + id).innerText;
+                if (effect != "") {
+                    my_causes.push([label_text, document.getElementById("cause" + id + "_dropdown").value]);
+                }
+            }
+           
+            var prediction = naive.predict(effect, my_causes);
+            document.getElementById("predict_result").innerHTML = prediction[0] + " " + prediction[1];
+        }
+    </script>
+</body>
+</html>
