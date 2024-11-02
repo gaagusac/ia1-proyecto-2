@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Learning Frontend</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Proyecto 2 - IA 1 - Machine Learning</h1>
+    
+    <!-- Selector de Archivo CSV -->
+    <section>
+        <label for="fileInput">Cargar Dataset (CSV):</label>
+        <input type="file" id="fileInput" accept=".csv">
+    </section>
+
+    <!-- Selector de Algoritmos -->
+    <section>
+        <label for="algorithmSelect">Seleccionar Algoritmo:</label>
+        <select id="algorithmSelect">
+            <option value="linearRegression">Regresión Lineal</option>
+            <option value="polynomialRegression">Regresión Polinomial</option>
+            <option value="kMeans">K-Means</option>
+            <option value="decisionTree">Árbol de Decisión</option>
+            <option value="neuralNetwork">Red Neuronal</option>
+            <option value="naiveBayes">Naive Bayes</option>
+            <option value="kNearestNeighbors">K vecinos mas cercanos</option>
+        </select>
+    </section>
+
+    <!-- Parámetros -->
+    <section id="parameters">
+        <h2>Parámetros</h2>
+        <label for="trainDataPercentage">Porcentaje de Train Data:</label>
+        <input type="number" id="trainDataPercentage" value="70" min="1" max="100">
+
+        <label for="testDataPercentage">Porcentaje de Test Data:</label>
+        <input type="number" id="testDataPercentage" value="30" min="1" max="100">
+        
+        <label for="target">Objetivo del Entrenamiento:</label>
+        <input type="text" id="target" placeholder="Ej. Clasificación, Predicción">
+        
+        <!-- Parámetros específicos del modelo -->
+        <div id="modelSpecificParameters"></div>
+    </section>
+
+    <!-- Botones -->
+    <section>
+        <button id="trainBtn">Entrenar</button>
+        <button id="predictBtn">Predecir</button>
+        <button id="showGraphBtn">Mostrar Gráficas</button>
+    </section>
+
+    <!-- Contenedor de Gráficas -->
+    <section>
+        <canvas id="chart"></canvas>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="./tytus.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
